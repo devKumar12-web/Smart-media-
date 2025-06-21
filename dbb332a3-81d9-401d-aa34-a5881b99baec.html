@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Math Genius | Solve Any Problem</title>
+    <base target="_self">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@preline/preline@2.0.0/dist/preline.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        .solution-card {
+            transition: all 0.3s ease;
+        }
+        .solution-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .camera-preview {
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-blue-600 text-white shadow-lg">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-square-root-alt text-2xl"></i>
+                    <h1 class="text-2xl font-bold">AI Math Genius</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="themeToggle" class="p-2 rounded-full hover:bg-blue-700 transition">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:inline"></i>
+                    </button>
+                    <button class="px-4 py-2 bg-blue-700 rounded-lg hover:bg-blue-800 transition">
+                        <i class="fas fa-user mr-2"></i>Sign In
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 py-8">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Solve Any Math Problem</h2>
+                    <p class="text-gray-600 dark:text-gray-300">Get step-by-step solutions instantly using AI</p>
+                </div>
+
+                <!-- Input Methods Tabs -->
+                <div class="mb-8">
+                    <div class="flex flex-wrap border-b border-gray-200 dark:border-gray-700 mb-6">
+                        <button id="textTab" class="tab-button active px-6 py-3 font-medium text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400">
+                            <i class="fas fa-keyboard mr-2"></i>Type
+                        </button>
+                        <button id="cameraTab" class="tab-button px-6 py-3 font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                            <i class="fas fa-camera mr-2"></i>Camera
+                        </button>
+                        <button id="voiceTab" class="tab-button px-6 py-3 font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                            <i class="fas fa-microphone mr-2"></i>Voice
+                        </button>
+                        <button id="drawTab" class="tab-button px-6 py-3 font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                            <i class="fas fa-pencil-alt mr-2"></i>Draw
+                        </button>
+                    </div>
+
+                    <!-- Text Input -->
+                    <div id="textInput" class="input-method active">
+                        <div class="relative">
+                            <textarea id="mathProblem" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white" rows="4" placeholder="Enter your math problem here..."></textarea>
+                            <button id="solveText" class="absolute right-3 bottom-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+                                <i class="fas fa-arrow-right mr-2"></i>Solve
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Camera Input -->
+                    <div id="cameraInput" class="input-method hidden">
+                        <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-4">
+                            <div class="camera-preview bg-black h-64 flex items-center justify-center mb-4">
+                                <p class="text-white">Camera preview will appear here</p>
+                            </div>
+                            <div class="flex justify-center space-x-4">
+                                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                    <i class="fas fa-camera mr-2"></i>Capture
+                                </button>
+                                <button class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+                                    <i class="fas fa-image mr-2"></i>Upload
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Voice Input -->
+                    <div id="voiceInput" class="input-method hidden">
+                        <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-6 text-center">
+                            <button id="startListening" class="p-6 bg-red-500 text-white rounded-full hover:bg-red-600 transition mx-auto mb-4">
+                                <i class="fas fa-microphone text-3xl"></i>
+                            </button>
+                            <p id="voiceStatus" class="text-gray-700 dark:text-gray-300">Press the microphone button and speak your math problem</p>
+                            <div id="voiceResult" class="mt-4 p-4 bg-white dark:bg-gray-700 rounded-lg hidden">
+                                <p class="text-gray-800 dark:text-gray-200"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Drawing Input -->
+                    <div id="drawInput" class="input-method hidden">
+                        <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+                            <div class="border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg h-64 mb-4 flex items-center justify-center">
+                                <p class="text-gray-500 dark:text-gray-400">Draw your math problem here</p>
+                            </div>
+                            <div class="flex justify-between">
+                                <div class="flex space-x-2">
+                                    <button class="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg">
+                                        <i class="fas fa-eraser"></i>
+                                    </button>
+                                    <button class="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                    <i class="fas fa-check mr-2"></i>Solve Drawing
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Processing Indicator -->
+                <div id="processingIndicator" class="hidden bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-8">
+                    <div class="flex items-center justify-center space-x-4">
+                        <div class="pulse-animation">
+                            <i class="fas fa-brain text-blue-600 dark:text-blue-400 text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-blue-800 dark:text-blue-200">AI is solving your problem</h3>
+                            <p class="text-sm text-blue-600 dark:text-blue-400">This may take a few seconds...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Solution Display -->
+                <div id="solutionSection" class="hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-white">Solution</h3>
+                        <div class="flex space-x-2">
+                            <button class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                                <i class="fas fa-save"></i>
+                            </button>
+                            <button class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="solution-card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden mb-6">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="font-bold text-lg text-gray-800 dark:text-white">Problem Statement</h4>
+                                    <p id="problemStatement" class="text-gray-600 dark:text-gray-300 mt-1">2x + 5 = 15</p>
+                                </div>
+                                <span class="px-3 py-1 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 rounded-full text-sm font-medium">Solved</span>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <h4 class="font-bold text-lg text-gray-800 dark:text-white mb-3">Step-by-Step Solution</h4>
+                                <div id="solutionSteps" class="space-y-4">
+                                    <!-- Steps will be inserted here by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="solution-card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                        <div class="p-6">
+                            <h4 class="font-bold text-lg text-gray-800 dark:text-white mb-3">Visual Representation</h4>
+                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 flex justify-center">
+                                <div id="graphContainer" class="w-full h-64">
+                                    <!-- Graph will be rendered here -->
+                                    <p class="text-center text-gray-500 dark:text-gray-400">Graphical representation of the solution</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Features -->
+                <div class="mt-16">
+                    <h3 class="text-2xl font-bold text-center text-gray-800 dark:text-white mb-8">Supercharge Your Learning</h3>
+                    
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden p-6">
+                            <div class="text-blue-600 dark:text-blue-400 mb-4">
+                                <i class="fas fa-chalkboard-teacher text-3xl"></i>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-800 dark:text-white mb-2">Video Explanations</h4>
+                            <p class="text-gray-600 dark:text-gray-300">Watch detailed video explanations for similar problems from our expert tutors.</p>
+                        </div>
+                        
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden p-6">
+                            <div class="text-green-600 dark:text-green-400 mb-4">
+                                <i class="fas fa-robot text-3xl"></i>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-800 dark:text-white mb-2">AI Tutor Chat</h4>
+                            <p class="text-gray-600 dark:text-gray-300">Ask follow-up questions and get instant answers from our AI tutor.</p>
+                        </div>
+                        
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden p-6">
+                            <div class="text-purple-600 dark:text-purple-400 mb-4">
+                                <i class="fas fa-tasks text-3xl"></i>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-800 dark:text-white mb-2">Practice Problems</h4>
+                            <p class="text-gray-600 dark:text-gray-300">Get personalized practice problems to master the concept.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white py-8">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-square-root-alt text-2xl"></i>
+                            <span class="text-xl font-bold">AI Math Genius</span>
+                        </div>
+                        <p class="text-gray-400 mt-2">Solving math problems smarter, not harder.</p>
+                    </div>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-white transition">About</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">Features</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">Pricing</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">Contact</a>
+                    </div>
+                </div>
+                <div class="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400 text-sm">
+                    <p>© 2023 AI Math Genius. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        // Check for saved theme preference
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Tab Switching
+        const tabs = document.querySelectorAll('.tab-button');
+        const inputMethods = document.querySelectorAll('.input-method');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and content
+                tabs.forEach(t => t.classList.remove('active'));
+                inputMethods.forEach(method => method.classList.add('hidden'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                const tabId = tab.id.replace('Tab', 'Input');
+                document.getElementById(tabId).classList.remove('hidden');
+            });
+        });
+
+        // Text Input Solution
+        const solveTextBtn = document.getElementById('solveText');
+        const mathProblem = document.getElementById('mathProblem');
+        const processingIndicator = document.getElementById('processingIndicator');
+        const solutionSection = document.getElementById('solutionSection');
+        const problemStatement = document.getElementById('problemStatement');
+        const solutionSteps = document.getElementById('solutionSteps');
+
+        solveTextBtn.addEventListener('click', () => {
+            const problem = mathProblem.value.trim();
+            if (!problem) return;
+
+            // Show processing indicator
+            processingIndicator.classList.remove('hidden');
+            solutionSection.classList.add('hidden');
+
+            // Simulate AI processing (in a real app, this would be an API call)
+            setTimeout(() => {
+                processingIndicator.classList.add('hidden');
+                solutionSection.classList.remove('hidden');
+                
+                // Update problem statement
+                problemStatement.textContent = problem;
+                
+                // Generate solution steps
+                solutionSteps.innerHTML = '';
+                const steps = generateSolutionSteps(problem);
+                steps.forEach((step, index) => {
+                    const stepElement = document.createElement('div');
+                    stepElement.className = 'flex items-start';
+                    stepElement.innerHTML = `
+                        <span class="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 font-medium mr-3">
+                            ${index + 1}
+                        </span>
+                        <div>
+                            <p class="text-gray-800 dark:text-gray-200">${step.description}</p>
+                            ${step.equation ? `<div class="mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg font-mono">${step.equation}</div>` : ''}
+                        </div>
+                    `;
+                    solutionSteps.appendChild(stepElement);
+                });
+            }, 2000);
+        });
+
+        // Voice Input Simulation
+        const startListening = document.getElementById('startListening');
+        const voiceStatus = document.getElementById('voiceStatus');
+        const voiceResult = document.getElementById('voiceResult');
+
+        startListening.addEventListener('click', () => {
+            voiceStatus.textContent = "Listening... Speak now";
+            startListening.classList.add('animate-pulse');
+            
+            // Simulate voice recognition
+            setTimeout(() => {
+                startListening.classList.remove('animate-pulse');
+                voiceStatus.textContent = "Press the microphone button and speak your math problem";
+                
+                // Show result (in a real app, this would come from speech recognition)
+                const sampleProblems = [
+                    "What is 2x plus 5 equals 15?",
+                    "Solve for x: 3x squared minus 5 equals 22",
+                    "Find the derivative of x squared plus 3x minus 4"
+                ];
+                const randomProblem = sampleProblems[Math.floor(Math.random() * sampleProblems.length)];
+                
+                voiceResult.querySelector('p').textContent = randomProblem;
+                voiceResult.classList.remove('hidden');
+                
+                // Auto-fill the text input
+                mathProblem.value = randomProblem;
+                
+                // Switch to text tab
+                document.getElementById('textTab').click();
+            }, 3000);
+        });
+
+        // Helper function to generate solution steps (simplified for demo)
+        function generateSolutionSteps(problem) {
+            // This is a simplified simulation - a real app would use proper math parsing
+            if (problem.includes('2x + 5 = 15')) {
+                return [
+                    { description: "Start with the original equation", equation: "2x + 5 = 15" },
+                    { description: "Subtract 5 from both sides to isolate the term with x", equation: "2x = 15 - 5" },
+                    { description: "Simplify the right side", equation: "2x = 10" },
+                    { description: "Divide both sides by 2 to solve for x", equation: "x = 10 ÷ 2" },
+                    { description: "Final solution", equation: "x = 5" }
+                ];
+            } else if (problem.includes('3x squared') || problem.includes('3x^2')) {
+                return [
+                    { description: "Original equation", equation: "3x² - 5 = 22" },
+                    { description: "Add 5 to both sides", equation: "3x² = 27" },
+                    { description: "Divide both sides by 3", equation: "x² = 9" },
+                    { description: "Take the square root of both sides", equation: "x = ±3" },
+                    { description: "Solutions", equation: "x = 3 or x = -3" }
+                ];
+            } else if (problem.includes('derivative')) {
+                return [
+                    { description: "Original function", equation: "f(x) = x² + 3x - 4" },
+                    { description: "Apply power rule to x²", equation: "d/dx(x²) = 2x" },
+                    { description: "Derivative of 3x is 3", equation: "d/dx(3x) = 3" },
+                    { description: "Derivative of constant is 0", equation: "d/dx(-4) = 0" },
+                    { description: "Combine all terms", equation: "f'(x) = 2x + 3" }
+                ];
+            } else {
+                return [
+                    { description: "Problem analysis", equation: problem },
+                    { description: "Applying mathematical principles" },
+                    { description: "Simplifying the equation" },
+                    { description: "Solving for the unknown variable" },
+                    { description: "Verifying the solution" }
+                ];
+            }
+        }
+
+        // Prevent default anchor behavior
+        document.querySelectorAll('a').forEach(anchor => {
+            anchor.addEventListener('click', e => e.preventDefault());
+        });
+    </script>
+</body>
+</html>
